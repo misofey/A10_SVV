@@ -123,7 +123,6 @@ class Mesh:
         
         # Inintialize counter for elements
         iE = 0
-        firstElementNumber = 0
 
         # Initialize list of dict with large number of empty dict (here 1000)
         self.mesh['element'] = [dict() for i_dic in range(1000)]
@@ -155,7 +154,7 @@ class Mesh:
             # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             
             # Register first element number of part
-            # firstElementNumber = iE+1
+            firstElementNumber = iE+1
 
             # Loop over elements in part
             for jx in range(part['nElements']):
@@ -195,7 +194,6 @@ class Mesh:
             lastElementNumber = iE
             part['elementNumbers'] = range(
                 firstElementNumber, lastElementNumber+1)
-            firstElementNumber = iE + 1
     
         # Store total amount of elements
         self.mesh['nElements'] = iE
