@@ -214,10 +214,22 @@ class Mesh:
         # Plot all nodes
         plt.plot(self.mesh['nodes'][0, :], self.mesh['nodes'][1, :], 'ok',
                 linewidth=4, markerfacecolor='None', markersize=5)
-        
+
+        range_x = max(self.assembly.input['points'][0, :]) - min(self.assembly.input['points'][0, :])
+        range_y = max(self.assembly.input['points'][1, :]) - min(self.assembly.input['points'][1, :])
+
         # Format the axis of the plot
-        plt.xlim([min(self.assembly.input['points'][0, :])-0.5, max(self.assembly.input['points'][0, :])+0.5])
-        plt.ylim([min(self.assembly.input['points'][1, :])-0.5, max(self.assembly.input['points'][1, :])+0.5])
+        plt.xlim([min(self.assembly.input['points'][0, :])-0.1*range_x, max(self.assembly.input['points'][0, :])+0.1*range_x])
+        plt.ylim([min(self.assembly.input['points'][1, :])-0.1*range_y, max(self.assembly.input['points'][1, :])+0.1*range_y])
+
+        plt.minorticks_on()
+        plt.grid(True, which="major", linestyle="-",alpha=0.2)
+        plt.grid(True, which="minor",linestyle=":",alpha=0.7)
+
+        plt.hlines(0, min(self.assembly.input['points'][0, :]) - 0.1 * range_x, max(self.assembly.input['points'][0, :]) + 0.1* range_x, "k", zorder=-100)
+        plt.fill_between([min(self.assembly.input['points'][0, :]) - 0.1 * range_x,
+                          max(self.assembly.input['points'][0, :]) + 0.1 * range_x],
+                         min(self.assembly.input['points'][1, :]) - 0.1 * range_y, 0, color='gray', alpha=0.5)
 
         # Optionally, save and show figure
         if save:

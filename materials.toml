@@ -5,14 +5,14 @@
 [ Aluminium ]
 E = 70                 # [GPa]
 rho = 2.700e-06        # [kg/mm^3]
-alpha = 24e-06         # [mm/(mm deg)]
+alpha = 0 #24e-06         # [mm/(mm deg)]
 
 [ Steel ]
 E = 210                # [GPa]
 rho = 7.850e-06        # [kg/mm^3]
-alpha = 24e-06         # [mm/(mm deg)]
+alpha = 0 #24e-06         # [mm/(mm deg)]
 
 [ CFRP ]
 E = 200                # [GPa]
 rho = 1.800e-06        # [kg/mm^3]
-alpha = 6e-06          # [mm/(mm deg)]
+alpha = 0 #6e-06          # [mm/(mm deg)]

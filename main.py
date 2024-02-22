@@ -28,7 +28,7 @@ def MechRes2D(inp):
     # based on the original by Julien van Campen
     # Aerospace Structures and Computational Mechanics
     # TU Delft
-    # October 2021 â€“ January 2022 & January 2023
+    # October 2021, January 2022 & January 2023
     # ==============================End of Preamble================================
     
     # --------------------------------------------------------------------------
@@ -56,9 +56,9 @@ def MechRes2D(inp):
         assembly.plot_input()
 
         # Pause for user to do visual inspection of structure and mesh
-        input('Please inspect the mesh shown in figures 1 and 2 and 3. \
-               They may also be saved in the working path as "mesh_1.png", "mesh_2.png", and "mesh_3.png", if so configured. \
-               Press enter to continue.')
+        # input('Please inspect the mesh shown in figures 1 and 2 and 3. \
+        #        They may also be saved in the working path as "mesh_1.png", "mesh_2.png", and "mesh_3.png", if so configured. \
+        #        Press enter to continue.')
     
     # --------------------------------------------------------------------------
     # 3. Creation of Elements
@@ -87,37 +87,14 @@ def MechRes2D(inp):
     
     # --------------------------------------------------------------------------
     # 6. Performing the analysis
-    # TODO: Calculate stresses and strains
+    assembly.analysis()
     # --------------------------------------------------------------------------
-    o = assembly.output
-    
-    # Displacements and reaction forces
-    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    KrInv = np.linalg.inv(o['Kr'])
-    Ur = KrInv@(o['Pr']-o['Qr'])
-    # Displacements of entire system
-    o['U'][o['activeDF']] = Ur
-    # Reaction forces
-    Rs = o['Ksr']@Ur - (o['Ps']-o['Qs'])
-    # Reaction forces of entire system
-    o['R'][o['inactiveDF']] = Rs
-
-    # Eigenfrequency analysis
-    # ~~~~~~~~~~~~~~~~~~~~~~~
-    # Compute eigenvalues
-    eigenfreqs = np.linalg.eig(-KrInv@o['mr'])[0]
-    # Proces first userdefined number of eigenvalues
-    eigenfreqs = np.sqrt(np.abs(eigenfreqs[:inp['nFreq']]**(-1)))
-    # Return eigenfrequencies to assembly.output.
-    o['eigenfrequencies'] = eigenfreqs
-
-    # Write any changes in the output alias back to the assembly's output
-    assembly.output = o
     
     # --------------------------------------------------------------------------
     # 7. Plot results
     # TODO: improve plots to ease comparison, etc.
     # --------------------------------------------------------------------------
+    assembly.plot_structure_stresses()
     assembly.plot_output()
 
     # --------------------------------------------------------------------------
@@ -254,7 +231,7 @@ if __name__ == '__main__':
     PLOT = True
     
     # Create input geometry from TOML file
-    inp = telescope_geometry('telescope.toml')
+    inp = telescope_geometry('simple_beam.toml')
 
     # Run simulation
     output = MechRes2D(inp)

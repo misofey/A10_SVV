@@ -4,7 +4,7 @@
 # Reference to learn TOML: https://learnxinyminutes.com/docs/toml/
 # --------------------------------------------------------------------------
 
-name      = 'SpaceTelescope'
+name      = 'SimpleBeam'
 
 # --------------------------------------------------------------------------
 # Telescope geometry
@@ -13,14 +13,14 @@ name      = 'SpaceTelescope'
 type      = 1                # [-] 1 if beam, 0 if rod structure is selected
 
 R         = 2400             # [mm] Radius of the telescope dish
-cl        = 300              # [mm] Clearance of telescope with base plate
+cl        = 600              # [mm] Clearance of telescope with base plate
 b         = 700              # [mm] Base of standing legs telescope
 phi       = 30               # [deg] opening angle of dish
 
-sym       = 1                # [-] condition for whether to make only half a telescope or whole (symmetrical)
-deltaT    = 250              # [-] change in temperature
+sym       = 0                # [-] condition for whether to make only half a telescope or whole (symmetrical)
+deltaT    = 0              # [-] change in temperature
 
-seeds     = 8                # [-] results in n + 2 nodes per part
+seeds     = 3                # [-] results in n + 2 nodes per part
 lump_mass = 1                # [-] 1 if lumped mass matrix is to be used, 0 if full mass matrix is to be used (only for rod structure)
 
 # --------------------------------------------------------------------------
@@ -44,26 +44,28 @@ I = 250000                   # [mm^4]
 # --------------------------------------------------------------------------
 
 [ PartProperties ]
-materials = [2, 2, 2, 1]      # index of material in materials dictionary
-sections  = [1, 1, 0, 2]      # index of section in secion list above
-
-#materials = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]   #truss
-#sections  = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]   #truss
+materials = [2, 2, 2]      # index of material in materials dictionary
+sections  = [0, 0, 0]      # index of section in secion list above
 
 # --------------------------------------------------------------------------
 # Applied forces
 # --------------------------------------------------------------------------
 [[ Forces ]]
-point     = 1                # [-]
+point     = 4                # [-]
+axis      = 0                # 0 for force along x axis, 1 for force along y
+magnitude = 1000             # [N]
+
+[[ Forces ]]
+point     = 4                # [-]
 axis      = 1                # 0 for force along x axis, 1 for force along y
-magnitude = -100000             # [N]
+magnitude = 1000             # [N]
 
 # --------------------------------------------------------------------------
 # Boundary conditions
 # Note: specify the DOFs that are fixed only! By default, DOF is free
 # --------------------------------------------------------------------------
 [[ BoundaryConditions ]]
-point = 5
+point = 1
 DOF = [1, 1, 1]
 
 # --------------------------------------------------------------------------
@@ -73,3 +75,10 @@ DOF = [1, 1, 1]
 
 nFreq      = 5               # [-] number of eigenfrequencies displayed
 plot_scale = 1               # [-] displacement plot scale
+
+# --------------------------------------------------------------------------
+# Simple beam case indicator and additional settings
+# --------------------------------------------------------------------------
+[ AdditionalSettings ]
+asdfghjkl = 'filler_text'
+simple_beam_case = 1

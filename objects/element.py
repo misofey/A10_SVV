@@ -24,7 +24,7 @@ class Element:
 
     def local_stiffness_matrix(self):
 
-        # Local stiffness matrix
+        # Local stiffness matrix #Marcin: checked it-is correct
         # ----------------------------------------------------------------------
         
         e = self.assembly.mesh['element'][self.ix]
@@ -79,7 +79,7 @@ class Element:
 
     def local_thermal_load_vector(self):
 
-        # Local thermal load vector
+        # Local thermal load vector #Marcin: checked it-is correct
         # ----------------------------------------------------------------------
 
         e = self.assembly.mesh['element'][self.ix]
@@ -93,7 +93,7 @@ class Element:
 
     def rotation_matrix(self):
 
-        # Rotation Matrix
+        # Rotation Matrix #Marcin: checked it-is correct
         # ----------------------------------------------------------------------
 
         e = self.assembly.mesh['element'][self.ix]
@@ -117,7 +117,7 @@ class Element:
 
     def local_mass_matrix(self):
 
-        # Local mass matrix
+        # Local mass matrix #Marcin: checked it-is correct
         # ----------------------------------------------------------------------
 
         e = self.assembly.mesh['element'][self.ix]

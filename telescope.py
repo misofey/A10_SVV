@@ -17,7 +17,9 @@ def create_simulation_input(
     # Boundary conditons
     bc,
     # Output settings
-    nFreq, plot_scale
+    nFreq, plot_scale,
+    # Additional settings
+    additional_settings
     # --------------------------------------------------------------------------
     ) -> dict:
 
@@ -26,65 +28,74 @@ def create_simulation_input(
 
     input['name'] = name
 
-    # Geometry angles
-    phi1 = 0
-    phi2 = phi/3/180*np.pi
-    phi3 = 2*phi2
-    phi4 = phi/180*np.pi
-    # Shared x-coordinates
-    x1 = -R*np.sin(phi1)
-    x2 = -R*np.sin(phi2)
-    x3 = -R*np.sin(phi3)
-    x4 = -R*np.sin(phi4)
-    # Shared y-coordinates
-    y1 = cl+R*(1-np.cos(phi1))
-    y2 = cl+R*(1-np.cos(phi2))
-    y3 = cl+R*(1-np.cos(phi3))
-    y4 = cl+R*(1-np.cos(phi4))
-    # Angle legs
-    theta = np.arctan((b+x3)/y3)
-    
-    # Create structure for selected type
-    # --------------------------------------------------------------------------
-    if type:        
-        # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-        # Beam structure
-        # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-        # X coordinates
-        x5 = -b
-        # Y coordinates
-        y5 = 0
-        # Assemble points
-        input['points'] = np.array([[x1, x2, x3, x4, x5],
-                                    [y1, y2, y3, y4, y5]])
-        input['parts'] = np.array([[1, 2, 3, 3],
-                                   [2, 3, 4, 5]])        
-        # Element type
-        input['type'] = np.ones((max(input['parts'].shape)), dtype=int)
+    if (len(additional_settings) != 0) and (additional_settings['simple_beam_case']):
+        print("Simple beam case selected")
+        assert (type == 1)
+
+        input['points'] = np.array([[0., 1., 2., 3.], [0., 0., 0., 0.]])
+        input['parts'] = np.array([[1, 2, 3], [2, 3, 4]])
+        input['type'] = np.ones(3, dtype=int)
+        theta = np.pi/2
     else:
-        # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-        # Truss structure
-        # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-        # X coordinates
-        x5 = x3 + cl/2*np.cos(np.pi/3+theta)
-        x6 = x3 - cl/2*np.cos(np.pi/3-theta)
-        x7 = -b
-        # Y coordinates
-        y5 = y3 - cl/2*np.sin(np.pi/3+theta)
-        y6 = y3 - cl/2*np.sin(np.pi/3-theta)
-        y7 = 0
-        # Assemble points
-        input['points'] = np.array([
-            [x1, x2, x3, x4, x5, x6, x7],
-            [y1, y2, y3, y4, y5, y6, y7]
-        ])        
-        # Assembly parts
-        input['parts'] = np.array([
-            [1, 2, 3, 1, 2, 3, 3, 4, 5, 5, 6],
-            [2, 3, 4, 5, 5, 5, 6, 6, 6, 7, 7]
-        ])        
-        # Element type
-        input['type'] = np.zeros((max(input['parts'].shape)), dtype=int)
+        # Geometry angles
+        phi1 = 0
+        phi2 = phi/3/180*np.pi
+        phi3 = 2*phi2
+        phi4 = phi/180*np.pi
+        # Shared x-coordinates
+        x1 = -R*np.sin(phi1)
+        x2 = -R*np.sin(phi2)
+        x3 = -R*np.sin(phi3)
+        x4 = -R*np.sin(phi4)
+        # Shared y-coordinates
+        y1 = cl+R*(1-np.cos(phi1))
+        y2 = cl+R*(1-np.cos(phi2))
+        y3 = cl+R*(1-np.cos(phi3))
+        y4 = cl+R*(1-np.cos(phi4))
+        # Angle legs
+        theta = np.arctan((b+x3)/y3)
+
+        # Create structure for selected type
+        # --------------------------------------------------------------------------
+        if type:
+            # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+            # Beam structure
+            # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+            # X coordinates
+            x5 = -b
+            # Y coordinates
+            y5 = 0
+            # Assemble points
+            input['points'] = np.array([[x1, x2, x3, x4, x5],
+                                        [y1, y2, y3, y4, y5]])
+            input['parts'] = np.array([[1, 2, 3, 3],
+                                       [2, 3, 4, 5]])
+            # Element type
+            input['type'] = np.ones((max(input['parts'].shape)), dtype=int)
+        else:
+            # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+            # Truss structure
+            # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+            # X coordinates
+            x5 = x3 + cl/2*np.cos(np.pi/3+theta)
+            x6 = x3 - cl/2*np.cos(np.pi/3-theta)
+            x7 = -b
+            # Y coordinates
+            y5 = y3 - cl/2*np.sin(np.pi/3+theta)
+            y6 = y3 - cl/2*np.sin(np.pi/3-theta)
+            y7 = 0
+            # Assemble points
+            input['points'] = np.array([
+                [x1, x2, x3, x4, x5, x6, x7],
+                [y1, y2, y3, y4, y5, y6, y7]
+            ])
+            # Assembly parts
+            input['parts'] = np.array([
+                [1, 2, 3, 1, 2, 3, 3, 4, 5, 5, 6],
+                [2, 3, 4, 5, 5, 5, 6, 6, 6, 7, 7]
+            ])
+            # Element type
+            input['type'] = np.zeros((max(input['parts'].shape)), dtype=int)
 
     # Initialise seed for every part to 0
     input['seed_array'] = np.zeros((max(input['parts'].shape)))
@@ -190,7 +201,7 @@ def create_simulation_input(
     return input
 
 
-def read_input(input_file) -> dict:
+def read_input(input_file) -> tuple:
 
     d = toml.load(input_file)
     
@@ -215,13 +226,19 @@ def read_input(input_file) -> dict:
     # Output settings
     output_settings = d['Output']
 
-    return name, geometry, sections, part_properties, forces, bc, output_settings
+    # Check for any additional entries in the input toml file
+    if 'AdditionalSettings' in d.keys():
+        additional_settings = d['AdditionalSettings']
+    else:
+        additional_settings = {}
+
+    return name, geometry, sections, part_properties, forces, bc, output_settings, additional_settings
 
 
 def telescope_geometry(input_file):
     
     # Read input from TOML file
-    name, geometry, sections, part_properties, forces, bc, output_settings = read_input(input_file)
+    name, geometry, sections, part_properties, forces, bc, output_settings, additional_settings = read_input(input_file)
 
     # Read materials from input TOML file
     materials_file = 'materials.toml'
@@ -241,7 +258,9 @@ def telescope_geometry(input_file):
         # Boundary condition application
         bc             = bc,
         # Output settings
-        **output_settings
+        **output_settings,
+        # Additional settings
+        additional_settings=additional_settings
     )
 
     return input
